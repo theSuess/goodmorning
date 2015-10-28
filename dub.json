@@ -1,8 +1,9 @@
 {
 	"name": "goodmorning",
-	"description": "A minimal D application.",
+	"description": "Chat bot sending you your daily news",
 	"copyright": "Copyright © 2015, thesuess",
 	"authors": ["thesuess"],
 	"dependencies": {
+		"delegram": "~>0.1.2"
 	}
 }
