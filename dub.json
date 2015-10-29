@@ -4,6 +4,8 @@
 	"copyright": "Copyright © 2015, thesuess",
 	"authors": ["thesuess"],
 	"dependencies": {
-		"delegram": "~>0.1.2"
-	}
+		"delegram": "~>0.1.2",
+		"d2sqlite3": "~>0.7.3"
+	},
+	"libs":["curl"]
 }
