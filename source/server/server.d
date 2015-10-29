@@ -35,7 +35,7 @@ class Server
 		);
 	}
 
-	public int runScheduler()
+	public void runScheduler()
 	{
 		// 61 to be sure that we don't skip a minute
 		int offset = 61 - Clock.currTime.second;
@@ -49,7 +49,6 @@ class Server
 			sendtask.executeInNewThread();
 			Thread.sleep(dur!("seconds")(60));
 		}
-		return 0;
 	}
 
 	private NewsRequest[] getRequests()
