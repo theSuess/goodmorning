@@ -9,8 +9,8 @@ import utils;
 int main(string[] args)
 {
 	string token;
-	debug{string dbpath = "database.db";}
-	version(release){string dbpath = ":memory:";}
+	string dbpath = ":memory:";
+	debug{dbpath = "database.db";}
 	bool help;
 	getopt(args,
 			"token|t",&token,
@@ -21,20 +21,18 @@ int main(string[] args)
 		printHelp();
 		return 0;
 	}
-	debug
-	{
-		auto settings = ServerSettings(environment["bottoken"]);
-	}
-	version(release)
-	{
-		auto settings = ServerSettings(token);
-	}
+
+	auto settings = ServerSettings(token);
+	debug{ settings.token = environment["bottoken"];}
 	settings.dbpath = dbpath;
 	auto server = new Server(settings);
+
 	auto scheduler = task!runScheduler(&server);
 	auto chatinterface = task!runInterface(&server);
 	scheduler.executeInNewThread();
 	chatinterface.executeInNewThread();
+
+	// Keep running
 	scheduler.yieldForce();
 	chatinterface.yieldForce();
 	return 0;
