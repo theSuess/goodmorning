@@ -6,6 +6,7 @@ import std.algorithm.iteration;
 import std.stdio;
 import std.string;
 import std.parallelism;
+import std.experimental.logger;
 import core.thread;
 import core.exception;
 
@@ -45,9 +46,16 @@ class Server
 		while (running)
 		{
 			NewsRequest[] requests = getRequests();
-			writeln(requests);
-			auto sendtask = task(&sendNews,requests);
-			sendtask.executeInNewThread();
+			if (requests.length == 0)
+			{
+				info("No news requested for this time... sleeping");
+			}
+			else
+			{
+				infof("News Requested! %s",requests);
+				auto sendtask = task(&sendNews,requests);
+				sendtask.executeInNewThread();
+			}
 			Thread.sleep(dur!("seconds")(60));
 		}
 	}
@@ -117,6 +125,7 @@ class Server
 				if (database.execute("SELECT count(*) FROM users WHERE id="~to!string(update.message.chat.id))
 						.oneValue!long == 0)
 				{
+					infof("Inserting new user (%s) into database",update.message.chat.id);
 					auto statement = database.prepare("INSERT INTO users (id,sub,hour,minute) VALUES(
 						:id,:sub,:hour,:minute)");
 					statement.bindAll(update.message.chat.id,"news",hour,minute);
@@ -124,6 +133,7 @@ class Server
 				}
 				else
 				{
+					infof("Updating times of %s",update.message.chat.id);
 					auto statement = database.prepare("UPDATE users SET hour=:hour,minute=:minute WHERE id = :id");
 					statement.bindAll(hour,minute,update.message.chat.id);
 					statement.execute();
@@ -149,6 +159,7 @@ class Server
 					bot.sendMessage(update.message.chat.id,"Please set a time first");
 
 				// Update the DB record
+				infof("Updating sub of %s to %s",update.message.chat.id,command[1]);
 				auto statement = database.prepare("UPDATE users SET sub=:subreddit WHERE id = :id");
 				statement.bindAll(command[1],update.message.chat.id);
 				statement.execute();

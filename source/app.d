@@ -2,6 +2,7 @@ import std.stdio;
 import std.process;
 import std.getopt;
 import std.parallelism;
+import std.experimental.logger;
 
 import server;
 import utils;
@@ -9,6 +10,7 @@ import utils;
 int main(string[] args)
 {
 	string token;
+	debug{ token = environment["bottoken"];}
 	string dbpath = ":memory:";
 	debug{dbpath = "database.db";}
 	bool help;
@@ -26,16 +28,23 @@ int main(string[] args)
 	{
 		writeln("Error: No token specified");
 		return 1;
-	}	
+	}
+
+	info("Setting up server");
 	auto settings = ServerSettings(token);
-	debug{ settings.token = environment["bottoken"];}
 	settings.dbpath = dbpath;
 	auto server = new Server(settings);
-
+	
+	info("Setting up scheduler");
 	auto scheduler = task!runScheduler(&server);
+
+	info("Setting up interface");
 	auto chatinterface = task!runInterface(&server);
+
+	info("Starting scheduler and interface...");
 	scheduler.executeInNewThread();
 	chatinterface.executeInNewThread();
+	info("Success! Server is now running");
 
 	// Keep running
 	scheduler.yieldForce();
