@@ -3,6 +3,7 @@ module reddit;
 import std.json;
 import std.net.curl;
 import std.exception;
+import core.exception;
 import std.stdio;
 
 struct Post
@@ -22,6 +23,19 @@ Post getHot(string subreddit)
 	p.url = response["url"].str;
 	p.author = response["author"].str;
 	return p;
+}
+
+bool subExists(string subreddit)
+{
+	try
+	{
+		getHot(subreddit);
+	}
+	catch (RangeError)
+	{
+		return false;
+	}
+	return true;
 }
 
 unittest
