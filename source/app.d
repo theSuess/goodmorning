@@ -31,11 +31,11 @@ int main(string[] args)
 	}
 	settings.dbpath = dbpath;
 	auto server = new Server(settings);
-//	auto scheduler = task!runScheduler(&server);
-//	scheduler.executeInNewThread();
-//	scheduler.yieldForce();
+	auto scheduler = task!runScheduler(&server);
 	auto chatinterface = task!runInterface(&server);
+	scheduler.executeInNewThread();
 	chatinterface.executeInNewThread();
+	scheduler.yieldForce();
 	chatinterface.yieldForce();
 	return 0;
 }
