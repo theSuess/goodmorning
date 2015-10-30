@@ -164,7 +164,7 @@ class Server
 	private NewsRequest[] getRequests()
 	{
 		NewsRequest[] requests;
-		auto time = Clock.currTime;
+		auto time = Clock.currTime.toUTC;
 		string statement = "SELECT * FROM users WHERE hour="~ to!string(time.hour) ~
 			" AND minute =" ~ to!string(time.minute);
 		auto results = database.execute(statement);
