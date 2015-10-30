@@ -22,6 +22,11 @@ int main(string[] args)
 		return 0;
 	}
 
+	if (token is null)
+	{
+		writeln("Error: No token specified");
+		return 1;
+	}	
 	auto settings = ServerSettings(token);
 	debug{ settings.token = environment["bottoken"];}
 	settings.dbpath = dbpath;
